@@ -12,7 +12,8 @@ if(isset($_GET['numero'])){
   if(!empty($ligne)){
     echo json_encode($ligne);
   }else{
-    http_response_code(204); // Résultat vide, la question n'existe pas
+    http_response_code(404); // Erreur 404, la question n'existe pas (fin du quizz)
+    die();
   }
 }else{
   echo json_encode([]);

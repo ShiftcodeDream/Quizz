@@ -1,0 +1,43 @@
+body{
+  text-align: center;
+}
+.question, .reponse, .dropZone{
+  font-size: 24px;
+  border: 2px solid DarkBlue;;
+  border-radius: 15px;
+  display:inline-block;
+  width:30%;
+  /* height:30px; */
+  padding:20px 10px;
+  margin:0.3%;
+}
+.question{
+}
+.reponse{
+  background:#afdeed;
+}
+.dropZone{
+  border:1px dashed #888;
+  height:100%;
+}
+.dropZone.highlight{
+  background:#EE8;
+}
+#titreQuestion{
+  font-size: 24px;
+}
+#boutonValider{
+  border: 3px solid #4e7233;
+  border-radius: 25px;
+  height:50px;
+  text-align: center;
+  font-weight:bold;
+  font-size:18px;
+  background:#3fb13f;
+  color:#A2F24D;
+  display:inline;
+  margin:20px 0;
+  padding:0 15px;
+  opacity:0;
+  visibility:hidden;
+}
