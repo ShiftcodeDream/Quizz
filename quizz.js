@@ -14,7 +14,16 @@ var optionsDroppable = {
   drop: elementDrop,
 };
 var vitesseFondu = 800;
-
+var resetStyle = {
+  position: '',
+  width: '',
+  height: '',
+  right: '',
+  bottom: '',
+  left: '',
+  top: '',
+  opacity: '',
+};
 // Initialisations
 $(function(){
   questionSuivante();
@@ -65,20 +74,37 @@ function creeQuestion(cible, nom, definition){
 
 // Appelée lorsqu'un élément est déposé par glissé-déposé
 function elementDrop(e, ui){
-  // Repositionne l'élément qui vient d'être déposé
-  $(ui.draggable).animate({left: '-33%'}, 'fast');
+  // Récupère les blocs réponse et emplacement de dépose de la question
+  reponse = $(ui.draggable);
+  emplacement = $(e.target);
   // Si le draggable vient de quitter un droppable, rendre la place de nouveau disponible
   // pour un prochain draggable.
-  ancien = $(ui.draggable).data('ancienConteneur');
-  if(undefined !== ancien)
-    ancien.droppable('option', 'disabled', false);
+  // Sinon, on compte une nouvelle réponse donnée.
+  ancien = reponse.data('ancienConteneur');
+  if(undefined !== ancien){
+    ancien.droppable('option', 'disabled', false)
+    .html('&nbsp;')
+    .removeClass('pleine');
+  }else{
+    reponse.addClass('posee').before( $('<div>').addClass('reponseVide').html('&nbsp;') );
+    reponsesDonnees++;
+  }
+
+  // Repositionne l'élément qui vient d'être déposé
+  // $(ui.draggable).animate({left: '-33%'}, 'fast');
+  // On déplace l'élément
+  emplacement.addClass('pleine').html('');
+  // Retire les styles inline mis en place par jQuery ui
+  // et réactive le drag and drop suite au déplacement de l'objet dans le DOM
+  reponse.css(resetStyle).appendTo(emplacement).draggable(optionsDraggable);
+  console.log('double dragon');
   // Oblige l'élément qui vient de recevoir la réponse à ne plus accepter de nouvelles valeurs
-  $(e.target).removeClass('highlight').droppable('option', 'disabled', true);
+  $(emplacement).removeClass('highlight').droppable('option', 'disabled', true);
   // Enregistre dans le draggable l'objet vers lequel il vient d'être déposé.
   // Permet, lors de son prochain déplacement, de rendre de nouveau la place disponible
   // pour un prochain draggable.
-  $(ui.draggable).data('ancienConteneur', $(e.target));
-  if(++reponsesDonnees >= 4){
+  $(reponse).data('ancienConteneur', emplacement);
+  if(reponsesDonnees >= 4){
     $("#boutonValider").css('visibility', 'visible').animate({opacity: 1}, 1500);
   };
 }

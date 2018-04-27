@@ -9,19 +9,36 @@ body{
   width:30%;
   /* height:30px; */
   padding:20px 10px;
-  margin:0.3%;
 }
-.question{
+.question, .dropZone{
+  margin-right:0.5%;
 }
 .reponse{
   background:#afdeed;
+  margin:0;
+}
+.reponse.posee{
+  width:calc(100% - 22px);
+}
+.reponseVide{
+  font-size: 24px;
+  display:inline-block;
+  width:30%;
+  padding:20px 10px;
+  margin:0.3%;
 }
 .dropZone{
   border:1px dashed #888;
   height:100%;
 }
 .dropZone.highlight{
-  background:#EE8;
+  background:#FFFEA1;
+  border:2px dashed DarkBlue;
+}
+.dropZone.pleine{
+  padding:0;
+  width: calc(30% + 20px);
+  border:1px solid LightGray;
 }
 #titreQuestion{
   font-size: 24px;
@@ -40,4 +57,7 @@ body{
   padding:0 15px;
   opacity:0;
   visibility:hidden;
+}
+.ligne{
+  margin-bottom:5px;
 }
