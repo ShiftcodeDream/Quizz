@@ -5,7 +5,7 @@ var reponsesDonnees = 0; // Compteur de réponses actuellement données pour la 
 var optionsDraggable = {
   opacity: 0.5,
   revert: 'invalid',
-  cursor: 'grab',
+  cursor: 'grabbing',
 };
 var optionsDroppable = {
   accept: '.reponse',
@@ -28,6 +28,7 @@ var resetStyle = {
 $(function(){
   questionSuivante();
   $("#boutonValider").click(validerReponses);
+  $("#boutonReset").click(afficheQuestion);
 })
 
 // Vérfifie les réponses et passe à la question suivante
@@ -51,7 +52,10 @@ function questionSuivante(){
 
 // Affiche la question reçue en ajax
 function afficheQuestion(chalenge){
-  question = chalenge; // la variable question est définie globalement
+  console.log(chalenge['numero']);
+  // Si la paramètre passé est la réponse ajax
+  if(undefined !== chalenge['numero'])
+    question = chalenge; // la variable question est définie globalement
   $("#titreQuestion").html(question['question']);
   aire = $("#aireDeJeu").html('');
   for(i=1;i<5;i++)
@@ -60,6 +64,7 @@ function afficheQuestion(chalenge){
   reponsesDonnees = 0;
   // Masque le bouton de validation
   $("#boutonValider").css({visibility: 'hidden', opacity: 0});
+  $("#boutonReset").css({visibility: 'hidden', opacity: 0});
   // Apparition de la question
   $("body").fadeIn(vitesseFondu);
 }
@@ -96,8 +101,7 @@ function elementDrop(e, ui){
   emplacement.addClass('pleine').html('');
   // Retire les styles inline mis en place par jQuery ui
   // et réactive le drag and drop suite au déplacement de l'objet dans le DOM
-  reponse.css(resetStyle).appendTo(emplacement).draggable(optionsDraggable);
-  console.log('double dragon');
+  reponse.draggable("destroy").css(resetStyle).appendTo(emplacement).draggable(optionsDraggable);
   // Oblige l'élément qui vient de recevoir la réponse à ne plus accepter de nouvelles valeurs
   $(emplacement).removeClass('highlight').droppable('option', 'disabled', true);
   // Enregistre dans le draggable l'objet vers lequel il vient d'être déposé.
@@ -106,6 +110,9 @@ function elementDrop(e, ui){
   $(reponse).data('ancienConteneur', emplacement);
   if(reponsesDonnees >= 4){
     $("#boutonValider").css('visibility', 'visible').animate({opacity: 1}, 1500);
+  };
+  if(reponsesDonnees >= 1){
+    $("#boutonReset").css('visibility', 'visible').animate({opacity: 1}, 1500);
   };
 }
 

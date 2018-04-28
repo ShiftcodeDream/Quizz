@@ -17,6 +17,9 @@ body{
   background:#afdeed;
   margin:0;
 }
+.reponse:hover{
+  cursor: grab;
+}
 .reponse.posee{
   width:calc(100% - 22px);
 }
@@ -52,6 +55,21 @@ body{
   font-size:18px;
   background:#3fb13f;
   color:#A2F24D;
+  display:inline;
+  margin:20px 0;
+  padding:0 15px;
+  opacity:0;
+  visibility:hidden;
+}
+#boutonReset{
+  border: 3px solid #00D;
+  border-radius: 15px;
+  height:30px;
+  text-align: center;
+  font-weight:bold;
+  font-size:18px;
+  background:#3f75b1;
+  color:#B9D2E7;
   display:inline;
   margin:20px 0;
   padding:0 15px;
