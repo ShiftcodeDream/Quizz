@@ -44,7 +44,7 @@ function init(){
       }
     });
   }
-
+  $("#hint").show();
   // Va chercher la première question
   // et affecte les callbacks aux boutons en attendant
   // la réponse du serveur
@@ -133,7 +133,7 @@ function creeQuestion(cible, definition, reponse){
 
 // Appelée lorsqu'un élément est déposé par glissé-déposé
 function elementDrop(e, ui){
-  // Récupère les blocs réponse et emplacement de dépose de la question
+  // Récupère les blocs réponse et emplacement de dépose
   reponse = $(ui.draggable);
   emplacement = $(e.target);
   // Si le draggable vient de quitter un droppable, rendre la place de nouveau disponible
@@ -149,13 +149,10 @@ function elementDrop(e, ui){
     reponsesDonnees++;
   }
 
-  // Repositionne l'élément qui vient d'être déposé
-  // $(ui.draggable).animate({left: '-33%'}, 'fast');
-  // On déplace l'élément
+  // Repositionne l'élément qui vient d'être déposé dans le DOM
   emplacement.addClass('pleine').html('');
   // Retire les styles inline mis en place par jQuery ui
-  // et réactive le drag and drop suite au déplacement de l'objet dans le DOM
-  reponse.draggable("destroy").css(resetStyle).appendTo(emplacement).draggable(optionsDraggable);
+  reponse.draggable("destroy").css(resetStyle).appendTo(emplacement);
   // Oblige l'élément qui vient de recevoir la réponse à ne plus accepter de nouvelles valeurs
   $(emplacement).removeClass('highlight').droppable('option', 'disabled', true);
   // Enregistre dans le draggable l'objet vers lequel il vient d'être déposé.
@@ -183,6 +180,7 @@ function erreurOuFin(xqhr, status, message){
 function finDuQuizz(){
   // Masque tous les boutons
   $("#boutonValider, #boutonReset").css({visibility: 'hidden', opacity: 0});
+  $("#hint").hide();
   $("#titreQuestion").html("Fin du quizz");
   nombreQuestions = (numeroQuestion-1)*4;
   $("#aireDeJeu").html("<h3>Nous voici arrivés au terme de ce quizz. Sur " + nombreQuestions +
