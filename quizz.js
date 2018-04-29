@@ -35,6 +35,8 @@ function init(){
   // Prépare la boîte de dialogue (une seule fois, même si on rejoue)
   if(null == dialogue){
     dialogue = $("#dialogReponses").dialog({
+      dialogClass: "no-close",
+      closeOnEscape: false,
       autoOpen : false,
       modal : true,
       buttons: {
@@ -71,7 +73,7 @@ function validerReponses(){
 }
 
 function afficheNbBonnesReponses(nombre){
-  $("#boutonValider, #boutonReset").css({visibility: 'hidden', opacity: 0});  
+  $("#boutonValider, #boutonReset").css({visibility: 'hidden', opacity: 0});
   // Change le message en fonction du nombre de bonnes réponses
   // En théorie, si on a 3 bonnes réponses, alors la quatrième est bonne aussi
   // Sauf s'il y a eu un problème (mauvais calcul d'id, corruption dans les données transmises)

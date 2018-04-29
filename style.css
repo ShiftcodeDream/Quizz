@@ -62,7 +62,7 @@ body{
   visibility:hidden;
 }
 input[type='button']{
-  border: 3px solid #00D;
+  border: none;
   border-radius: 15px;
   height:30px;
   text-align: center;
@@ -78,4 +78,25 @@ input[type='button']{
 }
 .ligne{
   margin-bottom:5px;
+}
+h3{
+  padding-bottom: 90px;
+}
+/* Pas de bouton close dans la boîte de dialogue */
+.no-close .ui-dialog-titlebar-close {
+  display: none;
+}
+/* Centrer convenablement le titre de la boîte de dialogue */
+.no-close .ui-dialog-title{
+  width:100%;
+}
+/* Centrer les boutons */
+.ui-dialog .ui-dialog-buttonpane {
+    text-align: center;
+}
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
+    float: none;
+}
+.ui-dialog .ui-dialog-buttonpane{
+  padding: 0.3em 1em;
 }
