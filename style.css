@@ -31,7 +31,7 @@ body{
   margin:0.3%;
 }
 .dropZone{
-  border:1px dashed #888;
+  border:2px dashed #CCC;
   height:100%;
 }
 .dropZone.highlight{
@@ -61,7 +61,7 @@ body{
   opacity:0;
   visibility:hidden;
 }
-#boutonReset{
+input[type='button']{
   border: 3px solid #00D;
   border-radius: 15px;
   height:30px;

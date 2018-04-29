@@ -2,6 +2,7 @@ var numeroQuestion = 0;
 var score = 0;
 var question;
 var reponsesDonnees = 0; // Compteur de réponses actuellement données pour la question en cours
+var dialogue = null;
 var optionsDraggable = {
   opacity: 0.5,
   revert: 'invalid',
@@ -13,7 +14,6 @@ var optionsDroppable = {
   out: function(e, ui){$(e.target).removeClass("highlight")},
   drop: elementDrop,
 };
-var vitesseFondu = 800;
 var resetStyle = {
   position: '',
   width: '',
@@ -24,21 +24,75 @@ var resetStyle = {
   top: '',
   opacity: '',
 };
+
 // Initialisations
-$(function(){
+$(init);
+function init(){
+  numeroQuestion = 0;
+  score = 0;
+  question;
+  reponsesDonnees = 0;
+  // Prépare la boîte de dialogue (une seule fois, même si on rejoue)
+  if(null == dialogue){
+    dialogue = $("#dialogReponses").dialog({
+      autoOpen : false,
+      modal : true,
+      buttons: {
+        "OK" : questionSuivante
+      }
+    });
+  }
+
+  // Va chercher la première question
+  // et affecte les callbacks aux boutons en attendant
+  // la réponse du serveur
   questionSuivante();
   $("#boutonValider").click(validerReponses);
   $("#boutonReset").click(afficheQuestion);
-})
+}
 
 // Vérfifie les réponses et passe à la question suivante
 function validerReponses(){
-  console.log("TODO à valider");
-  $("body").fadeOut(vitesseFondu, questionSuivante);
+  // Créé un tableau contenant les identifiants des réponses dans l'ordre
+  reponses = [];
+  $(".reponse").each(function(index, t){
+    reponses[index] = $(t).data('id');
+  });
+  // Demande au serveur le nombre de bonnes réponses
+  $.getJSON({
+    url : "verifie.php",
+    data : {
+      numero : numeroQuestion,
+      reponses : reponses
+    }
+  })
+  .done(afficheNbBonnesReponses)
+  .fail(erreurOuFin);
+}
+
+function afficheNbBonnesReponses(nombre){
+  $("#boutonValider, #boutonReset").css({visibility: 'hidden', opacity: 0});  
+  // Change le message en fonction du nombre de bonnes réponses
+  // En théorie, si on a 3 bonnes réponses, alors la quatrième est bonne aussi
+  // Sauf s'il y a eu un problème (mauvais calcul d'id, corruption dans les données transmises)
+  score += nombre;
+  console.log(score);
+  pluriel ="s";
+  switch(nombre){
+    case 4 : msg = "Bien joué !"; break;
+    case 2 : msg = "Pas mal !"; break;
+    case 1 : msg = "Bon début."; pluriel="";  break;
+    case 0 : msg = "Aïe !"; pluriel=""; break;
+    default : msg = "Oups, problème !";
+  }
+  dialogue.html(msg + " Tu as " + nombre + " bonne" + pluriel + " réponse" + pluriel + ".").dialog("open");
+  // Passe à la question suivante
 }
 
 // Récupère en ajax la question suivante
 function questionSuivante(){
+  if(numeroQuestion > 0)
+    dialogue.dialog('close');
   numeroQuestion++;
   requete = $.getJSON({
     url: "question.php",
@@ -51,30 +105,28 @@ function questionSuivante(){
 }
 
 // Affiche la question reçue en ajax
+// Peut aussi être appelée sur un événement onClick
 function afficheQuestion(chalenge){
-  console.log(chalenge['numero']);
-  // Si la paramètre passé est la réponse ajax
-  if(undefined !== chalenge['numero'])
+  // Si le paramètre passé est une réponse ajax appropriée
+  if(undefined !== chalenge.numero)
     question = chalenge; // la variable question est définie globalement
-  $("#titreQuestion").html(question['question']);
+  $("#titreQuestion").html(question.question);
+  // On récupère et vide la div qui contiendra les objets à déplacer
   aire = $("#aireDeJeu").html('');
-  for(i=1;i<5;i++)
-    creeQuestion(aire, question['def' + i], question['nom' + i]);
-  // RAZ ompteur de réponses déposées
+  for(i=0;i<4;i++)
+    creeQuestion(aire, question.definitions[i], question.reponses[i]);
+  // RAZ compteur de réponses déposées par drag and drop
   reponsesDonnees = 0;
-  // Masque le bouton de validation
-  $("#boutonValider").css({visibility: 'hidden', opacity: 0});
-  $("#boutonReset").css({visibility: 'hidden', opacity: 0});
-  // Apparition de la question
-  $("body").fadeIn(vitesseFondu);
+  // Masque le bouton de validation et de remise à zéro
+  $("#boutonValider, #boutonReset").css({visibility: 'hidden', opacity: 0});
 }
 
 // Ajoute un couple question / réponse à l'aire de jeu
-function creeQuestion(cible, nom, definition){
+function creeQuestion(cible, definition, reponse){
   ligne = $('<div>').addClass('ligne').appendTo(cible);
-  $('<div>').addClass('question').html(nom).appendTo(ligne);
+  $('<div>').addClass('question').html(definition).appendTo(ligne);
   $('<div>').addClass('dropZone').html('&nbsp;').droppable(optionsDroppable).appendTo(ligne);
-  $('<div>').addClass('reponse').html(definition).draggable(optionsDraggable).appendTo(ligne);
+  $('<div>').addClass('reponse').html(reponse.nom).data('id', reponse.id).draggable(optionsDraggable).appendTo(ligne);
 }
 
 // Appelée lorsqu'un élément est déposé par glissé-déposé
@@ -127,5 +179,14 @@ function erreurOuFin(xqhr, status, message){
 
 // Si la dernière question a été atteinte, on affiche le score final
 function finDuQuizz(){
-  alert("fin du quizz");
+  // Masque tous les boutons
+  $("#boutonValider, #boutonReset").css({visibility: 'hidden', opacity: 0});
+  $("#titreQuestion").html("Fin du quizz");
+  nombreQuestions = (numeroQuestion-1)*4;
+  $("#aireDeJeu").html("<h3>Nous voici arrivés au terme de ce quizz. Sur " + nombreQuestions +
+  " définitions, tu en as trouvé " + score + ".</h3>");
+  // Créé un bouton pour rejouer
+  $("<input>").attr('type', 'button').val('Rejouer').appendTo("#aireDeJeu")
+  .css('visibility', 'visible').animate({opacity: 1}, 1500)
+  .click(function(){$(this).remove();init()});
 }
